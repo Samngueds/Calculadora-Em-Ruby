@@ -1,0 +1,85 @@
+require 'tk'
+
+# Cria a janela principal com fundo cinza escuro
+root = TkRoot.new(title: "Calculadora") {
+  background '#2c2c2c'  # Cor de fundo cinza escuro
+}
+root.geometry("340x340")
+
+# Define o ícone da janela usando um arquivo .ico
+root.iconbitmap('icone.ico')
+
+# Frame para a entrada da calculadora
+entry_frame = TkFrame.new(root) {
+  background '#2c2c2c'  # Cor de fundo do frame
+}
+entry_frame.pack(padx: 10, pady: 10, side: 'top')
+
+# Exibição da calculadora
+entry = TkEntry.new(entry_frame) {
+  width 30
+  bd 3
+  font 'Arial 20'
+  background '#ffffff'  # Cor de fundo branco para a entrada
+  foreground '#000000'  # Cor do texto preto
+}
+entry.pack(padx: 10, pady: 10)
+
+# Função para atualizar a entrada
+def update_entry(entry, value)
+  entry.value += value.to_s
+end
+
+# Função para calcular e exibir o resultado
+def calculate(entry)
+  begin
+    result = eval(entry.value)  # Avalia a expressão
+    entry.value = result.to_s   # Atualiza a entrada com o resultado
+  rescue
+    entry.value = "Erro"        # Exibe erro se a expressão for inválida
+  end
+end
+
+# Função para apagar o último caractere
+def erase_entry(entry)
+  entry.value = entry.value[0..-2]
+end
+
+# Frame para os botões com imagem de fundo
+buttons_frame = TkFrame.new(root) {
+  background '#2c2c2c'
+}
+buttons_frame.pack(padx: 10, pady: 10, side: 'top')
+
+# Criar 9 botões em um grid 3x3
+buttons = [
+  ['7', '8', '9', '/'],
+  ['4', '5', '6', '*'],
+  ['1', '2', '3', '-'],
+  ['0', '=', '+', '←']
+]
+
+buttons.each_with_index do |row, row_index|
+  row.each_with_index do |text, col_index|
+    button = TkButton.new(buttons_frame) {
+      text text
+      command {
+        if text == '='
+          calculate(entry)
+        elsif text == '←'
+          erase_entry(entry)
+        else
+          update_entry(entry, text)
+        end
+      }
+      background '#8B0000'  # Cor de fundo dos botões
+      foreground 'black'      # Cor do texto dos botões
+      width 5
+      padx 10
+      pady 10
+    }
+    button.grid(row: row_index, column: col_index, padx: 5, pady: 5)  # Ajusta o índice para as linhas
+  end
+end
+
+Tk.mainloop
